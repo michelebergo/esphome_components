@@ -36,10 +36,10 @@ static const uint8_t DATA_BYTE6 = 9;
 static const uint8_t DATA_BYTE7 = 10;
 static const uint8_t DATA_BYTE8 = 11;
 
-static const uint8_t ADDR_INDOOR_UNIT_1 = 0x00;
-static const uint8_t ADDR_INDOOR_UNIT_2 = 0x01;
-static const uint8_t ADDR_INDOOR_UNIT_3 = 0x02;
-static const uint8_t ADDR_INDOOR_UNIT_4 = 0x03;
+static const uint8_t ADDR_INDOOR_UNIT_1 = 0x20;
+static const uint8_t ADDR_INDOOR_UNIT_2 = 0x21;
+static const uint8_t ADDR_INDOOR_UNIT_3 = 0x22;
+static const uint8_t ADDR_INDOOR_UNIT_4 = 0x23;
 static const uint8_t ADDR_OUTDOOR_UNIT_1 = 0xC8;
 
 void Samsung_AC_F1F2comComponent::setup() {}
@@ -225,7 +225,7 @@ void Samsung_AC_F1F2comComponent::parse_data_() {
 }
 
 int8_t Samsung_AC_F1F2comComponent::byte_to_temperature_(uint8_t databyte) {
-  int8_t temperature = databyte - 55;   //0°C = 55 (0x37)
+  int8_t temperature = databyte - 55;   //0ï¿½C = 55 (0x37)
   return temperature;
 }
 
