@@ -224,6 +224,18 @@ void Samsung_AC_F1F2comComponent::parse_data_() {
       //delta q of indoor unit (byte 8)
       indoor2_delta_q_ = data_[DATA_BYTE8];
     }
+    // CMD 0x52 – Information Request (status from indoor to remote)
+    else if (data_[DATA_CMD] == 0x52) {
+      indoor1_set_temp_ = byte_to_temperature_(data_[DATA_BYTE1] & 0x7F);   // Byte 1: set temp
+      indoor1_room_temp_ = byte_to_temperature_(data_[DATA_BYTE2] & 0x7F);  // Byte 2: room temp
+      indoor1_pipe_in_temp_ = byte_to_temperature_(data_[DATA_BYTE3] & 0x7F); // Byte 3: output air temp
+
+      indoor1_fanspeed_ = data_[DATA_BYTE4] & 0b00000111; // fan speed bits (0=auto, 2=low, 4=medium, 5=high)
+      indoor1_bladeswing_ = ((data_[DATA_BYTE4] & 0b11111000) == 0xF8); // swing mode (0x1A = swing on, 0x1F = off, here generic check)
+
+      indoor1_operation_ = (data_[DATA_BYTE5] & 0b10000000) > 0; // power status (bit 7)
+      indoor1_remote_controlled_ = (data_[DATA_BYTE5] & 0b00001111); // bitfield for control type
+}
   }
 }
 
