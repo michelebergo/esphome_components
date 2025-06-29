@@ -1,4 +1,4 @@
-# some_esphome_components
+# esphome_components
 My own collection of ESPHOME components
 
 Warning: Some Components are still in developement or early beta-state. Use on your own Risk and don't be sad if something does not work ;)
