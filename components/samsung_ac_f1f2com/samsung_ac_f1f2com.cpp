@@ -206,16 +206,9 @@ void Samsung_AC_F1F2comComponent::parse_data_() {
 
       indoor1_operation_ = (data_[DATA_BYTE5] & 0b10000000) > 0; // power status (bit 7)
       indoor1_remote_controlled_ = (data_[DATA_BYTE5] & 0b00001111); // bitfield for control type
-      ESP_LOGD(TAG, "Temp: %02X", data_[DATA_BYTE1]);
-      ESP_LOGD(TAG, "Room: %02X", data_[DATA_BYTE2]);
-      ESP_LOGD(TAG, "Pipe: %02X", data_[DATA_BYTE3]);
-      ESP_LOGD(TAG, "Fan: %02X", data_[DATA_BYTE4]);
-      ESP_LOGD(TAG, "Mode: %02X", data_[DATA_BYTE5]);
-      ESP_LOGD(TAG, "Set-Temp: %d", indoor1_set_temp_);
-      ESP_LOGD(TAG, "Room-Temp: %d", indoor1_room_temp_);
-      ESP_LOGD(TAG, "Pipe-In-Temp: %d", indoor1_pipe_in_temp_);
-      ESP_LOGD(TAG, "Pipe-Out-Temp: %d", indoor1_pipe_out_temp_);
-      ESP_LOGD(TAG, "Fan-Speed: %d", indoor1_fanspeed_);
+      ESP_LOGD(TAG, "Indoor Unit 1: Set Temp: %d, Room Temp: %d, Pipe In Temp: %d, Pipe Out Temp: %d, Fan Speed: %d, Mode: %02X, Capacity: %.1f, Delta Q: %d",
+               indoor1_set_temp_, indoor1_room_temp_, indoor1_pipe_in_temp_, indoor1_pipe_out_temp_,
+               indoor1_fanspeed_, indoor1_mode_, indoor1_capacity_, indoor1_delta_q_);
     }
   }
 
