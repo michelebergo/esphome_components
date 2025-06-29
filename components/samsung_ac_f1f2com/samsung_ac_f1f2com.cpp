@@ -163,40 +163,15 @@ bool Samsung_AC_F1F2comComponent::check_data_() const {
   
 void Samsung_AC_F1F2comComponent::parse_data_() {
   //uncomment next 4 lines to see all packages from indoor1 to outdoor1
-  if (data_[DATA_SRC] == ADDR_REMOTE_UNIT_1 && data_[DATA_DST] == ADDR_INDOOR_UNIT_1) { //data from indoor-unit 1 to outdoor-unit
+  if (data_[DATA_SRC] == ADDR_INDOOR_UNIT_1 && data_[DATA_DST] == ADDR_REMOTE_UNIT_1) { //data from indoor-unit 1 to outdoor-unit
     ESP_LOGD(TAG, "Raw: %02X %02x %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X",
              data_[0], data_[1], data_[2], data_[3], data_[4], data_[5], data_[6], data_[7], data_[8], data_[9], data_[10], data_[11], data_[12], data_[13]);
   }
 
   //data from indoor-unit 1 to outdoor-unit
   if (data_[DATA_SRC] == ADDR_INDOOR_UNIT_1 && data_[DATA_DST] == ADDR_REMOTE_UNIT_1) {
-    //CMD 0x20
-    if (data_[DATA_CMD] == 0x20) {
-      //temperatures
-      indoor1_set_temp_ = byte_to_temperature_(data_[DATA_BYTE1]);//Set-Temperature: Byte1 in CMD20
-      indoor1_room_temp_ = byte_to_temperature_(data_[DATA_BYTE2]);//Room-Temperature: Byte2 in CMD20
-      indoor1_pipe_in_temp_ = byte_to_temperature_(data_[DATA_BYTE3]);//Pipe-In-Temperature: Byte3 in CMD20
-      indoor1_pipe_out_temp_ = byte_to_temperature_(data_[DATA_BYTE8]);//Pipe-Out-Temperature: Byte8 in CMD20
-      //fan
-      indoor1_fanspeed_ = data_[DATA_BYTE4] & 0b00001111;// fanspeed: databyte4 Bit 3-0: 0=auto, 2=low, 4=medium, 5=high, 6=fresh
-      //swing
-      if ((data_[DATA_BYTE4] & 0b11110000) == 0xD0) indoor1_bladeswing_ = true;// bladeswing: databyte4 Bit 7-4: 0=off, D=on
-      else indoor1_bladeswing_ = false;
-      //power on / off
-      if (data_[DATA_BYTE5] & 0b10000000) indoor1_operation_ = true; //bit7 = Power on/off
-      else indoor1_operation_ = false;
-      //mode
-      indoor1_mode_ = data_[DATA_BYTE5] & 0b00111111;//mode: 0x01=heat, 0x02=cool, 0x04=dry, 0x08=fan, 0x21=auto(heat), 0x22=auto(cool)
-    }
-    //CMD 0x40
-    else if (data_[DATA_CMD] == 0x40) {
-      //Capacity of indoor unit (byte 6)
-      indoor1_capacity_ = float(data_[DATA_BYTE6]) / 10;
-      //delta q of indoor unit (byte 8)
-      indoor1_delta_q_ = data_[DATA_BYTE8];
-    }
-    // CMD 0x52 – Information Request (status from indoor to remote)
-    else if (data_[DATA_CMD] == 0x52) {
+    //CMD 0x52
+    if (data_[DATA_CMD] == 0x52) {
       indoor1_set_temp_ = byte_to_temperature_(data_[DATA_BYTE1] & 0x7F);   // Byte 1: set temp
       indoor1_room_temp_ = byte_to_temperature_(data_[DATA_BYTE2] & 0x7F);  // Byte 2: room temp
       indoor1_pipe_in_temp_ = byte_to_temperature_(data_[DATA_BYTE3] & 0x7F); // Byte 3: output air temp
@@ -209,47 +184,6 @@ void Samsung_AC_F1F2comComponent::parse_data_() {
       ESP_LOGD(TAG, "Indoor Unit 1: Set Temp: %d, Room Temp: %d, Pipe In Temp: %d, Pipe Out Temp: %d, Fan Speed: %d, Mode: %02X, Capacity: %.1f, Delta Q: %d",
                indoor1_set_temp_, indoor1_room_temp_, indoor1_pipe_in_temp_, indoor1_pipe_out_temp_,
                indoor1_fanspeed_, indoor1_mode_, indoor1_capacity_, indoor1_delta_q_);
-    }
-  }
-
-  //data from indoor-unit 1 to outdoor-unit
-  else if (data_[DATA_SRC] == ADDR_INDOOR_UNIT_2 && data_[DATA_DST] == ADDR_OUTDOOR_UNIT_1) {
-    //CMD 0x20  
-    if (data_[DATA_CMD] == 0x20) {
-      //temperatures
-      indoor2_set_temp_ = byte_to_temperature_(data_[DATA_BYTE1]);//Set-Temperature: Byte1 in CMD20
-      indoor2_room_temp_ = byte_to_temperature_(data_[DATA_BYTE2]);//Room-Temperature: Byte2 in CMD20
-      indoor2_pipe_in_temp_ = byte_to_temperature_(data_[DATA_BYTE3]);//Pipe-In-Temperature: Byte3 in CMD20
-      indoor2_pipe_out_temp_ = byte_to_temperature_(data_[DATA_BYTE8]);//Pipe-Out-Temperature: Byte8 in CMD20
-      //fan
-      indoor2_fanspeed_ = data_[DATA_BYTE4] & 0b00001111;// fanspeed: databyte4 Bit 3-0: 0=auto, 2=low, 4=medium, 5=high, 6=fresh
-      //swing
-      if ((data_[DATA_BYTE4] & 0b11110000) == 0xD0) indoor2_bladeswing_ = true;// bladeswing: databyte4 Bit 7-4: 0=off, D=on
-      else indoor2_bladeswing_ = false;
-      //power on / off
-      if (data_[DATA_BYTE5] & 0b10000000) indoor2_operation_ = true; //bit7 = Power on/off
-      else indoor2_operation_ = false;
-      //mode
-      indoor2_mode_ = data_[DATA_BYTE5] & 0b00111111;//mode: 0x01=heat, 0x02=cool, 0x04=dry, 0x08=fan, 0x22=auto
-    }
-    //CMD 0x40
-    else if (data_[DATA_CMD] == 0x40) {
-      //Capacity of indoor unit (byte 6)
-      indoor2_capacity_ = float(data_[DATA_BYTE6]) / 10;
-      //delta q of indoor unit (byte 8)
-      indoor2_delta_q_ = data_[DATA_BYTE8];
-    }
-    // CMD 0x52 – Information Request (status from indoor to remote)
-    else if (data_[DATA_CMD] == 0x52) {
-      indoor1_set_temp_ = byte_to_temperature_(data_[DATA_BYTE1] & 0x7F);   // Byte 1: set temp
-      indoor1_room_temp_ = byte_to_temperature_(data_[DATA_BYTE2] & 0x7F);  // Byte 2: room temp
-      indoor1_pipe_in_temp_ = byte_to_temperature_(data_[DATA_BYTE3] & 0x7F); // Byte 3: output air temp
-
-      indoor1_fanspeed_ = data_[DATA_BYTE4] & 0b00000111; // fan speed bits (0=auto, 2=low, 4=medium, 5=high)
-      indoor1_bladeswing_ = ((data_[DATA_BYTE4] & 0b11111000) == 0xF8); // swing mode (0x1A = swing on, 0x1F = off, here generic check)
-
-      indoor1_operation_ = (data_[DATA_BYTE5] & 0b10000000) > 0; // power status (bit 7)
-      indoor1_remote_controlled_ = (data_[DATA_BYTE5] & 0b00001111); // bitfield for control type
     }
   }
 }
